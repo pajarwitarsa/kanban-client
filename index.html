@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-signin-client_id" content="309535552197-8m1028j84180jv26ssvk0nr8lsa81v13.apps.googleusercontent.com">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+  <title>Kanban</title>
+</head>
+<body style="background-color: #4e73df;"->
+  <div id="app">
+  <div class="container" id="sign-in-form" v-if="page === 'login'">
+    <div class="row justify-content-center" style="margin-top: 100px;">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header bg-transparent mb-0">Welcome to kanban App</div>
+          <div class="card-body">
+            <form action="" @submit.prevent="">
+              <div class="form-group mb-2">
+                <input v-model="email" type="email" id="login-email" class="form-control" placeholder="Enter email address" required>
+              </div>
+              <div class="form-group mb-2">
+                <input v-model="password" type="password" id="login-password" class="form-control" placeholder="Password" required>
+              </div>
+              <div class="form-group mt-4">
+                <input @click="login" type="submit" id="" value="Sign In" class="w-100 btn btn-primary" style="background-color: #4e73df;">
+              </div>
+              <div class="form-group mt-4">
+                <a href="" @click.prevent="changePage('register')">New to Kanban app? Sign Up</a>
+              </div>
+              <div class="form-group mt-4 g-signin2" data-onsuccess="onSignIn" style="padding-bottom: 20px;"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Sign Up Form -->
+  <div class="container" id="sign-up-form" v-if="page === 'register'">
+    <div class="row justify-content-center" style="margin-top: 100px;">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header bg-transparent">Register</div>
+          <div class="card-body">
+            <form action="" @submit.prevent="">
+              <div class="form-group mb-2">
+                <input v-model="email" type="email" id="register-email" class="form-control" placeholder="Enter email address" required>
+              </div>
+              <div class="form-group mb-2">
+                <input v-model="password" type="password" id="register-password" class="form-control" placeholder="Password" required>
+              </div>
+              <div class="form-group mt-4">
+                <input @click="register" type="submit" id="" value="Sign Up" class="w-100 btn btn-primary" style="background-color: #3b5998;">
+              </div>
+              <div class="form-group mt-4">
+                <a href="" @click.prevent="changePage('login')">Already have an account? Sign In</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <header v-if="page === 'board'">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="" @click.prevent="">K A N B A N</a>
+        <button @click = "logout" class="btn btn-outline-success" type="submit">Sign Out</button>
+    </nav>
+  </header>
+  <!-- Main -->
+  <main v-if="page === 'board'">
+    <div class="container mt-5" id="kanban-board">
+      <div class="row">
+        <div class="col-md-3 text-center">
+          <div class="card">
+            <div class="card header" style="padding: 14px 16px;">Backlog</div>
+            <div class="card-body">
+
+            </div>
+            <div class="card-footer">
+              Card footer
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  </div>
+  <!-- ==================================================================================================================== -->
+  <!-- Vue --> 
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+  <!-- Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <!-- SweeetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <!-- Bootstrap JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+  <!-- Google Login -->
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="main.js"></script>
+</body>
+
+</html>
