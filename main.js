@@ -4,7 +4,8 @@ const vue = new Vue({
     server: 'https://kanban-server-6655.herokuapp.com',
     page: 'login',
     email: '',
-    password: ''
+    password: '',
+    loading: false
   },
   methods:{
     changePage(page) {
@@ -42,15 +43,16 @@ const vue = new Vue({
         }
       }
     },
-    login: async function(e) {
+    login: async function() {
       try {
         if(this.email && this.password) {
+          this.loading = true;
           const data = {
             email: this.email,
             password: this.password
-          };
-          
+          };          
           const response = await axios.post(this.server + '/login', data);
+          this.loading = false;
           Swal.fire({
             icon: 'success',
             title: 'Login Success',
@@ -58,6 +60,7 @@ const vue = new Vue({
             timer: 1500
           })
           .then(res => {
+            localStorage.setItem('access_token', response.data.access_token);
             this.changePage('board');
           })
         }        
@@ -70,17 +73,52 @@ const vue = new Vue({
             text: err.response.data.message
           })
           .then(res => {
+            this.loading = false;
             this.changePage('login');
           })
         }
       }
     },
+    onSignIn: async function(googleUser) {
+      try {
+        const idToken = googleUser.getAuthResponse().id_token;
+        const response = await axios.post(this.server + '/loginGoogle', { idToken });
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Success',
+          showConfirmButton: false,
+          timer: 1500
+        })
+        .then(res => {
+          localStorage.setItem('access_token', response.data.access_token);
+          this.changePage('board');
+        })
+      }
+      catch (err) {
+        console.log(err.response);
+      }
+    },
     logout () {
+      localStorage.clear();
+      var auth2 = gapi.auth2.getAuthInstance();
+      auth2.signOut().then(function () {
+        console.log('User signed out.');
+      });
       this.changePage('login');
     },
     clearForm () {
       this.email = ''
       this.password = ''
     }
+  },
+  created(){
+    if(localStorage.getItem('access_token')) {
+      this.changePage('board');
+    }
+  },
+  mounted() {
+    gapi.signin2.render('google-signin-button', {
+      onsuccess: this.onSignIn
+    });
   }
 });
