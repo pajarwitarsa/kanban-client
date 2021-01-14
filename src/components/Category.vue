@@ -1,16 +1,19 @@
 <template>
-  <div>
-    <div class="container-fluid mt-4 category">
-      <button class="btn btn-primary mb-3 mt-0">Add New Task</button>
-      <div class="row">
-        <div class="col-md-3 text-center" v-for="(category,idx) in categories" :key="idx">
-          <div class="card">
-            <div class="card header" style="padding: 14px 16px;">{{ category }}</div>
-            <task></task>
-          </div>          
+  <div class="col-md-3 text-center">
+    <div class="overflow-scroll" style="background-color:#fff; height: 700px">
+      <div class="card">
+        <div class="card header" style="padding: 14px 16px;">{{ category }}</div>
+        <!-- Task -->            
+        <div class="card-body">      
+          <task 
+            @deleteTask="deleteTask" 
+            v-for="task in tasks" 
+            :key="task.id" :task="task" 
+            :category="category">
+          </task>
         </div>
-      </div>
-    </div>
+      </div>   
+    </div>       
   </div>
 </template>
 
@@ -20,18 +23,26 @@ export default {
   name: 'Category',
   data() {
     return {
-      categories: ['Backlog', 'Todo', 'Doing', 'Done']
+      
     };
+  },
+  methods: {
+    deleteTask(taskId) {
+      this.$emit('deleteTask', taskId);
+    }
   },
   components: {
     Task
-  }
+  },
+  props: ['tasks', 'category']
+  
 }
 </script>
 
 <style>
   .category {
-    padding: 100px;
+    padding-left: 90px;
+    padding-right: 70px;
     padding-top: 0px;
   }
 </style>

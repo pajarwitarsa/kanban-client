@@ -2,6 +2,7 @@
 
   <login-form 
     v-if="page == 'login'"
+    :loading="loading"
     @changePage="changePage"
     @login="login"
   ></login-form>
@@ -12,11 +13,15 @@
     @register="register"
   ></register-form>
 
-   <kanban-board 
-    v-else-if="page == 'board'"
-    @changePage="changePage"
-    @logout="logout"
-  ></kanban-board >
+  <div v-else-if="page == 'board'">
+    <navbar-page @logout="logout"></navbar-page>
+    <kanban-board     
+      @changePage="changePage"
+      @addNewTask="addNewTask"
+      @deleteTask="deleteTask"
+      :tasks="tasks">
+    </kanban-board >
+  </div>   
 
 </template>
 
@@ -26,24 +31,27 @@ import axios from 'axios';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import KanbanBoard from './components/KanbanBoard';
-
+import NavbarPage from './components/NavbarPage';
 
 export default {
   name: 'App',
   data() {
     return {
       server: 'https://kanban-server-6655.herokuapp.com',
-      page: 'login'
-      
+      // server: 'http://localhost:3000',
+      page: 'login',
+      tasks: [],
+      loading: false
     };
   },
   computed: {
-    tasks: []
+
   },
   components: {
     LoginForm,
     RegisterForm,
-    KanbanBoard
+    KanbanBoard,
+    NavbarPage
   },
   created(){
     if(localStorage.getItem('access_token')) {
@@ -60,8 +68,11 @@ export default {
 
     login(data){
       if (!data) return false;
+      this.loading = true;
       axios.post(this.server + '/login', data)
       .then(response => {
+        localStorage.setItem('access_token', response.data.access_token);
+        this.getAllTask();
         Swal.fire({
             icon: 'success',
             title: 'Login Success',
@@ -69,7 +80,6 @@ export default {
             timer: 1500
           })
           .then(res => {
-            localStorage.setItem('access_token', response.data.access_token);
             this.changePage('board');
           })
       })
@@ -123,10 +133,65 @@ export default {
       axios.get(this.server + '/tasks', { headers: { access_token: localStorage.access_token } })
       .then(response => {
         this.tasks = response.data; 
-        console.log(response);
+        console.log(this.tasks, '<<<<');
       })
       .catch(err => { 
         console.log(err);
+      })
+    },
+
+    addNewTask(newTask) {
+      console.log('masukk app', newTask);
+      axios.post(this.server + '/tasks', newTask, { headers: { access_token: localStorage.access_token } })
+      .then(response => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            showConfirmButton: false,
+            timer: 1000
+          })
+          .then(res => {
+            this.getAllTask();
+          })
+      })
+      .catch(err => { 
+        if(err.response.status === 400) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: err.response.data.message
+          })
+          .then(res => {
+            this.changePage('board');
+          })
+        }
+      })
+    },
+
+    deleteTask(taskId) {
+      axios.delete(this.server + '/tasks/' + taskId, { headers: { access_token: localStorage.access_token } })
+      .then(response => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            showConfirmButton: false,
+            timer: 1000
+          })
+          .then(res => {
+            this.getAllTask();
+          })
+      })
+      .catch(err => { 
+        if(err.response.status === 401) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: err.response.data.message
+          })
+          .then(res => {
+            this.changePage('board');
+          })
+        }
       })
     }
 

@@ -36,11 +36,11 @@
 <script>
 export default {
   name: 'LoginForm',
+  props: ['loading'],
   data() {
     return {
       email: '',
-      password: '',
-      loading: ''
+      password: ''
     };
   },
   methods: {
