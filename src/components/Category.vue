@@ -1,12 +1,13 @@
 <template>
   <div class="col-md-3 text-center">
-    <div class="overflow-scroll" style="background-color:#fff; height: 700px">
-      <div class="card">
+    <div class="overflow-scroll" style="background-color: #3282b8;">
+      <div class="card" style="height: 700px">
         <div class="card header" style="padding: 14px 16px;">{{ category }}</div>
         <!-- Task -->            
-        <div class="card-body">      
+        <div class="card-body" style="background-color: #3282b8">      
           <task 
             @deleteTask="deleteTask" 
+            @getTask="getTask"
             v-for="task in tasks" 
             :key="task.id" :task="task" 
             :category="category">
@@ -27,6 +28,10 @@ export default {
     };
   },
   methods: {
+    getTask(taskId) {
+      console.log('masuk category');
+      this.$emit('getTask', taskId);
+    },
     deleteTask(taskId) {
       this.$emit('deleteTask', taskId);
     }

@@ -1,6 +1,6 @@
 <template>
       <!-- Modal -->
-    <div v-if="showForm" class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -11,19 +11,20 @@
             <form>
               <div class="mb-3">
                 <label for="recipient-name" class="col-form-label">Task:</label>
-                <input v-model="taskName" type="text" class="form-control" id="recipient-name">
+                <input v-model="task.title" type="text" class="form-control" id="recipient-name">
               </div>
               <div class="mb-3">
                 <label for="message-text" class="col-form-label">Category:</label>
-                <select v-model="category" class="form-select" aria-label="Default select example">
+                <select v-model="task.category" class="form-select" aria-label="Default select example">
                   <option v-for="(category,idx) in categories" :key="idx" :value="category"> {{ category }}</option>
                 </select>
               </div>
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button @click="saveTask" type="button" class="btn btn-primary">Save Task</button>
+            <button @click="clearForm" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>            
+            <button v-if="!task.id" @click="saveTask" type="button" class="btn btn-primary" data-bs-dismiss="modal">Save Task</button>
+            <button v-else @click="updateTask" type="button" class="btn btn-success" data-bs-dismiss="modal">Update Task</button>
           </div>
         </div>
       </div>
@@ -33,23 +34,37 @@
 <script>
 export default {
   name: 'TaskForm',
-  props: ['categories'],
+  props: ['categories', 'task'],
   data() {
     return {
-      showForm: true,
-      taskName: '',
-      category: ''
+      taskName: this.task.title,
+      category: this.task.category
     }
   },
   methods: {
     saveTask() {
       const newTask = {
-        title: this.taskName,
-        category: this.category
+        title: this.task.title,
+        category: this.task.category
       };
-      console.log(newTask);
       this.$emit('addNewTask', newTask);
+    },
+
+    updateTask() {
+      const updatedTask = {
+        id: this.task.id,
+        title: this.task.title,
+        category: this.task.category
+      };
+      this.$emit('updateTask', updatedTask);      
+    },
+
+    clearForm() {
+      this.task = {};
     }
+  },
+  mounted () {
+    console.log(this.task, '<<<< task');
   }
 }
 </script>

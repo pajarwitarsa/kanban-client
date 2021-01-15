@@ -21,10 +21,10 @@
                   <span class="sr-only" v-else>Sign In</span>               
                 </button>
               </div>
-              <div class="form-group mt-4">
+              <div class="form-group mt-4 mb-3">
                 <a href="" @click.prevent="$emit('changePage', 'register')">New to Kanban app? Sign Up</a>
               </div>
-              <div id="google-signin-button" class="form-group mt-4 g-signin2"  style="padding-bottom: 20px;"></div>
+              <GoogleLogin :params="params" :renderParams="renderParams" :onSuccess="onSuccess"></GoogleLogin>
             </form>
           </div>
         </div>
@@ -34,13 +34,23 @@
 </template>
 
 <script>
+import GoogleLogin from 'vue-google-login';
 export default {
   name: 'LoginForm',
   props: ['loading'],
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      params: {
+        client_id: "309535552197-k2jpi8q3uelire783icqfebnep5j68ro.apps.googleusercontent.com"
+      },
+      renderParams: {
+        margin: '20px',
+        width: 250,
+        height: 50,
+        longtitle: true
+      }
     };
   },
   methods: {
@@ -50,8 +60,16 @@ export default {
         password: this.password
       };
       this.$emit('login', data);
-      console.log(this.email, this.password);
+    },
+    onSuccess(googleUser) {
+      const data = {
+        idToken: googleUser.getAuthResponse().id_token
+      };
+      this.$emit('loginGoogle', data);      
     }
+  },
+  components: {
+    GoogleLogin
   }
 }
 </script>

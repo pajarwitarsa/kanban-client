@@ -5,6 +5,7 @@
     :loading="loading"
     @changePage="changePage"
     @login="login"
+    @loginGoogle="loginGoogle"
   ></login-form>
 
   <register-form 
@@ -18,7 +19,10 @@
     <kanban-board     
       @changePage="changePage"
       @addNewTask="addNewTask"
+      @updateTask="updateTask"
+      @getTask="getTask"
       @deleteTask="deleteTask"
+      :task="task"
       :tasks="tasks">
     </kanban-board >
   </div>   
@@ -41,7 +45,8 @@ export default {
       // server: 'http://localhost:3000',
       page: 'login',
       tasks: [],
-      loading: false
+      loading: false,
+      task: {}
     };
   },
   computed: {
@@ -59,6 +64,7 @@ export default {
       this.getAllTask();
     }
   },
+  
   methods: {   
 
     changePage(page) {
@@ -80,10 +86,45 @@ export default {
             timer: 1500
           })
           .then(res => {
+            this.loading = false;
             this.changePage('board');
           })
       })
       .catch(err => {
+        if(err.response.status === 400) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: err.response.data.message
+          })
+          .then(res => {
+            this.loading = false;
+            this.changePage('login');
+          })
+        }
+      })
+    },
+
+    loginGoogle(idToken) {
+      console.log(idToken);
+      this.loading = true;
+      axios.post(this.server + '/loginGoogle', idToken)
+      .then(response => {
+        localStorage.setItem('access_token', response.data.access_token);
+        this.getAllTask();
+        Swal.fire({
+            icon: 'success',
+            title: 'Login Success',
+            showConfirmButton: false,
+            timer: 1500
+          })
+          .then(res => {
+            this.loading = false;
+            this.changePage('board');
+          })
+      })
+      .catch(err => {
+        console.log(err);
         if(err.response.status === 400) {
           Swal.fire({
             icon: 'error',
@@ -126,7 +167,11 @@ export default {
 
     logout() {
       localStorage.clear();
-      this.changePage('login');
+      const auth2 = gapi.auth2.getAuthInstance();
+      auth2.signOut().then(function () {
+        console.log('User signed out.');
+      });
+      this.changePage('login');      
     },
 
     getAllTask() {
@@ -142,6 +187,7 @@ export default {
 
     addNewTask(newTask) {
       console.log('masukk app', newTask);
+      this.task = {};
       axios.post(this.server + '/tasks', newTask, { headers: { access_token: localStorage.access_token } })
       .then(response => {
         Swal.fire({
@@ -159,7 +205,7 @@ export default {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: err.response.data.message
+            text: err.response.data[0].message
           })
           .then(res => {
             this.changePage('board');
@@ -193,7 +239,47 @@ export default {
           })
         }
       })
+    },
+
+    getTask(taskId) {
+      console.log('masuk app');
+      axios.get(this.server + '/tasks/' + taskId, { headers: { access_token: localStorage.access_token } })
+      .then(response => {
+        this.task = response.data;
+      })
+      .catch(err => {
+        if(err.response.status === 401) {
+          this.task = {};
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: err.response.data.message
+          })
+          .then(res => {            
+            this.task = {};
+            this.changePage('board');
+          })
+        }
+      })
+    },
+
+    updateTask(updatedTask) {
+      console.log('update masuk app', updatedTask);
+      this.task = {};
+      axios.put(this.server + '/tasks/' + updatedTask.id, updatedTask, { headers: { access_token: localStorage.access_token } })
+      .then(response => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            showConfirmButton: false,
+            timer: 1000
+          })
+          .then(res => {
+            this.getAllTask();
+          })
+      })
     }
+
 
   }
 };
