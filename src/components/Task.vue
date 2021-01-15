@@ -19,6 +19,7 @@ export default {
     getDate() {
       return new Date(this.task.updatedAt).toLocaleString();
     }
+
   }
 }
 </script>

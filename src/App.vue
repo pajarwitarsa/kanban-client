@@ -245,18 +245,22 @@ export default {
       console.log('masuk app');
       axios.get(this.server + '/tasks/' + taskId, { headers: { access_token: localStorage.access_token } })
       .then(response => {
+        document.querySelector('#exampleModal').style.display = 'block';
+        document.querySelector('.modal-backdrop').style.display = 'block';
         this.task = response.data;
       })
       .catch(err => {
         if(err.response.status === 401) {
+          document.querySelector('#exampleModal').style.display = 'none';
+          document.querySelector('.modal-backdrop').style.display = 'none';
+          
           this.task = {};
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
             text: err.response.data.message
           })
-          .then(res => {            
-            this.task = {};
+          .then(res => {         
             this.changePage('board');
           })
         }
@@ -277,6 +281,18 @@ export default {
           .then(res => {
             this.getAllTask();
           })
+      })
+      .catch(err => { 
+        if(err.response.status === 400) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: err.response.data[0].message
+          })
+          .then(res => {
+            this.changePage('board');
+          })
+        }
       })
     }
 

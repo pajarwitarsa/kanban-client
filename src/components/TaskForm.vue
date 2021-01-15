@@ -43,6 +43,12 @@ export default {
   },
   methods: {
     saveTask() {
+      if(this.task.title === undefined) {
+        this.task.title = ''
+      }
+      if(this.task.category === undefined) {
+        this.task.category = ''
+      }
       const newTask = {
         title: this.task.title,
         category: this.task.category

@@ -43,7 +43,7 @@ export default {
       email: '',
       password: '',
       params: {
-        client_id: "309535552197-k2jpi8q3uelire783icqfebnep5j68ro.apps.googleusercontent.com"
+        client_id: "309535552197-4lb3gtl7n6ulkkeao1kpee2hg6vgsf15.apps.googleusercontent.com"
       },
       renderParams: {
         margin: '20px',
